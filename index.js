@@ -32,11 +32,11 @@ const client = new MongoClient(uri, {
 
 async function run() {
     try {
-        
+
 
         const assignmentCollection = client.db('assignmentdb').collection('allassignment')
         const submitResultCollection = client.db('assignmentdb').collection('submitresult')
-        
+
 
 
 
@@ -66,26 +66,37 @@ async function run() {
             res.send(result)
         })
 
-        // // delete data from ui
-        // app.put('/product/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const filter = { _id: new ObjectId(id) }
-        //     const options = { upsert: true };
-        //     const updatedCoffee = req.body
-        //     const coffee = {
-        //         $set: {
-        //             name: updatedCoffee.name,
-        //             brand: updatedCoffee.brand,
-        //             type: updatedCoffee.type,
-        //             price: updatedCoffee.price,
-        //             Rating: updatedCoffee.Rating,
-        //             details: updatedCoffee.details,
-        //             photo: updatedCoffee.photo,
-        //         }
-        //     }
-        //     const result = await productCollection.updateOne(filter, coffee, options)
-        //     res.send(result);
-        // })
+
+        // update
+        app.put('/assignment/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updateassignment = req.body
+            const assignment = {
+                $set: {
+                    title: updateassignment.title,
+                    level: updateassignment.level,
+                    totalMarks: updateassignment.totalMarks,
+                    date: updateassignment.date,
+                    questiondetails: updateassignment.questiondetails,
+                    photo: updateassignment.photo,
+
+
+                }
+            }
+            const result = await assignmentCollection.updateOne(filter, assignment, options)
+            res.send(result);
+        })
+
+
+
+
+        // ----------------------------------------------------------------------
+
+
+
+
 
 
 
@@ -99,22 +110,56 @@ async function run() {
         })
 
 
-         
+
         app.get('/answer', async (req, res) => {
             const cursor = submitResultCollection.find();
             const result = await cursor.toArray();
             res.send(result)
         })
 
+        // view one submit result
+        app.get('/answer/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await submitResultCollection.findOne(query);
+            res.send(result)
+        })
 
-        // app.get('/addtocart/:id', async (req, res) => {
-        //     const id = req.params.id;
-        //     const query = { _id: new ObjectId(id) }
-        //     const result = await cartcollection.findOne(query);
-        //     res.send(result)
-        // })
+        // update marks
+        app.put('/answer/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updatemarks = req.body
+            const marks = {
+                $set: {
+                    status: updatemarks.status,
+                    givenmarks: updatemarks.givenmarks,
+                    marksfeedback: updatemarks.marksfeedback,
+                    givermarksDisplayName: updatemarks.givermarksDisplayName,
+                    givenmarksEmail: updatemarks.givenmarksEmail,
 
-       
+                }
+            }
+            const result = await submitResultCollection.updateOne(filter, marks, options)
+            res.send(result);
+        })
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         // app.delete('/addtocart/:id', async(req,res)=>{
         //     const id = req.params.id
@@ -128,7 +173,7 @@ async function run() {
 
 
         // Send a ping to confirm a successful connection
-        
+
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
         // Ensures that the client will close when you finish/error
