@@ -35,6 +35,7 @@ async function run() {
         
 
         const assignmentCollection = client.db('assignmentdb').collection('allassignment')
+        const submitResultCollection = client.db('assignmentdb').collection('submitresult')
         
 
 
@@ -89,21 +90,21 @@ async function run() {
 
 
 
-        // add to card db collection
-        // app.post('/addtocart', async (req, res) => {
-        //     const newProduct = req.body;
-        //     console.log(newProduct)
-        //     const result = await cartcollection.insertOne(newProduct)
-        //     res.send(result)
-        // })
+        // result submit db collection
+        app.post('/answer', async (req, res) => {
+            const newProduct = req.body;
+            console.log(newProduct)
+            const result = await submitResultCollection.insertOne(newProduct)
+            res.send(result)
+        })
 
 
          
-        // app.get('/addtocart', async (req, res) => {
-        //     const cursor = cartcollection.find();
-        //     const result = await cursor.toArray();
-        //     res.send(result)
-        // })
+        app.get('/answer', async (req, res) => {
+            const cursor = submitResultCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
 
 
         // app.get('/addtocart/:id', async (req, res) => {
