@@ -90,7 +90,19 @@ async function run() {
         })
 
 
+        app.delete('/assignment/:id', async(req,res)=>{
+            const id = req.params.id
+            const query = {_id: new ObjectId(id)}
+            const result = await assignmentCollection.deleteOne(query)
+            res.send(result)
+        })
 
+
+
+        app.get('/assignmentCount',async(req,res)=>{
+            const count = await submitResultCollection.estimatedDocumentCount();
+            res.send({count})
+        })
 
         // ----------------------------------------------------------------------
 
@@ -161,12 +173,7 @@ async function run() {
 
 
 
-        // app.delete('/addtocart/:id', async(req,res)=>{
-        //     const id = req.params.id
-        //     const query = {_id: new ObjectId(id)}
-        //     const result = await cartcollection.deleteOne(query)
-        //     res.send(result)
-        // })
+        
 
 
 
