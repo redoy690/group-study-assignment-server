@@ -90,19 +90,16 @@ async function run() {
         })
 
 
-        app.delete('/assignment/:id', async(req,res)=>{
+        app.delete('/assignment/:id', async (req, res) => {
             const id = req.params.id
-            const query = {_id: new ObjectId(id)}
+            const query = { _id: new ObjectId(id) }
             const result = await assignmentCollection.deleteOne(query)
             res.send(result)
         })
 
 
 
-        app.get('/assignmentCount',async(req,res)=>{
-            const count = await submitResultCollection.estimatedDocumentCount();
-            res.send({count})
-        })
+
 
         // ----------------------------------------------------------------------
 
@@ -114,6 +111,7 @@ async function run() {
 
 
         // result submit db collection
+        // rcv data from ui
         app.post('/answer', async (req, res) => {
             const newProduct = req.body;
             console.log(newProduct)
@@ -122,12 +120,26 @@ async function run() {
         })
 
 
+        // for pagination
+        app.get('/assignmentCount', async (req, res) => {
+            const count = await submitResultCollection.estimatedDocumentCount();
+            res.send({ count })
+        })
 
+        // send ta from db
         app.get('/answer', async (req, res) => {
-            const cursor = submitResultCollection.find();
-            const result = await cursor.toArray();
+            const page = parseInt(req.query.page)
+            const size = parseInt(req.query.size)
+            
+            const result = await submitResultCollection.find()
+            .skip(page * size)
+            .limit(size)
+            .toArray();
+
             res.send(result)
         })
+
+
 
         // view one submit result
         app.get('/answer/:id', async (req, res) => {
@@ -173,7 +185,7 @@ async function run() {
 
 
 
-        
+
 
 
 
