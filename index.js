@@ -36,6 +36,7 @@ async function run() {
 
         const assignmentCollection = client.db('assignmentdb').collection('allassignment')
         const submitResultCollection = client.db('assignmentdb').collection('submitresult')
+        const marksCollection = client.db('assignmentdb').collection('markscomplete')
 
 
 
@@ -89,7 +90,7 @@ async function run() {
             res.send(result);
         })
 
-
+        // delete running assignment
         app.delete('/assignment/:id', async (req, res) => {
             const id = req.params.id
             const query = { _id: new ObjectId(id) }
@@ -100,13 +101,41 @@ async function run() {
 
 
 
-
         // ----------------------------------------------------------------------
+        // find one data for my running assignment
+        app.get('/assignments', async (req, res) => {
+            console.log(req.query.questionEmail)
+            let query = {};
+            if (req.query?.questionEmail) {
+                query = { questionEmail: req.query.questionEmail }
+            }
+            const result = await assignmentCollection.find(query).toArray()
+            res.send(result)
+        })
+
+
+
+        // find one data for my pending  assignment
+        app.get('/answers', async (req, res) => {
+            console.log(req.query.questionEmail)
+            let query = {};
+            if (req.query?.questionEmail) {
+                query = { questionEmail: req.query.questionEmail }
+            }
+            const result = await submitResultCollection.find(query).toArray()
+            res.send(result)
+        })
 
 
 
 
-
+        //    detelete data from submit collection
+        app.delete('/answers/:id', async (req, res) => {
+            const id = req.params.id
+            const query = { _id: new ObjectId(id) }
+            const result = await submitResultCollection.deleteOne(query)
+            res.send(result)
+        })
 
 
 
@@ -130,11 +159,11 @@ async function run() {
         app.get('/answer', async (req, res) => {
             const page = parseInt(req.query.page)
             const size = parseInt(req.query.size)
-            
+
             const result = await submitResultCollection.find()
-            .skip(page * size)
-            .limit(size)
-            .toArray();
+                .skip(page * size)
+                .limit(size)
+                .toArray();
 
             res.send(result)
         })
@@ -171,17 +200,64 @@ async function run() {
 
 
 
+        //marks data collect
+
+
+        app.post('/marks', async (req, res) => {
+            const newProduct = req.body;
+            console.log(newProduct)
+            const result = await marksCollection.insertOne(newProduct)
+            res.send(result)
+        })
+
+
+        //  see complete data from marks collection
+        app.get('/marks', async (req, res) => {
+            const cursor = marksCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        //  see complete data from marks collection
+        app.get('/marks/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await marksCollection.findOne(query);
+            res.send(result)
+        })
+
+        // find one data for complete assignment
+        app.get('/marks', async (req, res) => {
+            console.log(req.query.questionEmail)
+            let query = {};
+            if (req.query?.questionEmail) {
+                query = { questionEmail: req.query.questionEmail }
+            }
+            const result = await marksCollection.find(query).toArray()
+            res.send(result)
+        })
 
 
 
 
+        //   pagination for complete submited page
+        app.get('/resultCount', async (req, res) => {
+            const count = await marksCollection.estimatedDocumentCount();
+            res.send({ count })
+        })
 
+        // send ta from db
+        app.get('/result', async (req, res) => {
+            const page = parseInt(req.query.page)
+            const size = parseInt(req.query.size)
 
+            const result = await marksCollection.find()
+                .skip(page * size)
+                .limit(size)
+                .toArray();
 
-
-
-
-
+            res.send(result)
+        })
 
 
 
