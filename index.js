@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
+
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
@@ -39,6 +40,13 @@ async function run() {
         const marksCollection = client.db('assignmentdb').collection('markscomplete')
 
 
+
+
+
+    //  auth related api
+
+
+    
 
 
         // product db collection
