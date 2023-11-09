@@ -38,18 +38,19 @@ async function run() {
         const assignmentCollection = client.db('assignmentdb').collection('allassignment')
         const submitResultCollection = client.db('assignmentdb').collection('submitresult')
         const marksCollection = client.db('assignmentdb').collection('markscomplete')
+       
+
+
+
+
+       
 
 
 
 
 
-    //  auth related api
 
-
-    
-
-
-        // product db collection
+        // ----------------assignment collection part (1) ------------
 
         // send data to the db
         app.post('/assignment', async (req, res) => {
@@ -60,7 +61,7 @@ async function run() {
         })
 
 
-        //  get all assignment
+        //  get all assignment db to ui
         app.get('/assignment', async (req, res) => {
             const cursor = assignmentCollection.find();
             const result = await cursor.toArray();
@@ -109,8 +110,7 @@ async function run() {
 
 
 
-        // ----------------------------------------------------------------------
-        // find one data for my running assignment
+        // find one data for my running assignment(find with mail)
         app.get('/assignments', async (req, res) => {
             console.log(req.query.questionEmail)
             let query = {};
@@ -123,16 +123,11 @@ async function run() {
 
 
 
-        // find one data for my pending  assignment
-        app.get('/answers', async (req, res) => {
-            console.log(req.query.questionEmail)
-            let query = {};
-            if (req.query?.questionEmail) {
-                query = { questionEmail: req.query.questionEmail }
-            }
-            const result = await submitResultCollection.find(query).toArray()
-            res.send(result)
-        })
+
+
+        //  -----------------db submit collection part(2) ---------------------
+
+
 
 
 
@@ -157,24 +152,6 @@ async function run() {
         })
 
 
-        // for pagination
-        app.get('/assignmentCount', async (req, res) => {
-            const count = await submitResultCollection.estimatedDocumentCount();
-            res.send({ count })
-        })
-
-        // send ta from db
-        app.get('/answer', async (req, res) => {
-            const page = parseInt(req.query.page)
-            const size = parseInt(req.query.size)
-
-            const result = await submitResultCollection.find()
-                .skip(page * size)
-                .limit(size)
-                .toArray();
-
-            res.send(result)
-        })
 
 
 
@@ -207,7 +184,21 @@ async function run() {
         })
 
 
+        // find one data for my pending  assignment(find with mail)
+        app.get('/answers', async (req, res) => {
+            console.log(req.query.questionEmail)
+            let query = {};
+            if (req.query?.questionEmail) {
+                query = { questionEmail: req.query.questionEmail }
+            }
+            const result = await submitResultCollection.find(query).toArray()
+            res.send(result)
+        })
 
+
+
+
+        // ------------------- db marks collection part (3) ---------------
         //marks data collect
 
 
@@ -234,8 +225,8 @@ async function run() {
             res.send(result)
         })
 
-        // find one data for complete assignment
-        app.get('/marks', async (req, res) => {
+        // find one data for complete assignment(find with mail)
+        app.get('/gmarks', async (req, res) => {
             console.log(req.query.questionEmail)
             let query = {};
             if (req.query?.questionEmail) {
@@ -248,13 +239,37 @@ async function run() {
 
 
 
-        //   pagination for complete submited page
+        // pagination part
+        // -----------------------------------------------------------
+
+        //  pagination for pending submitted page (pagination part 1)
+        app.get('/assignmentCount', async (req, res) => {
+            const count = await submitResultCollection.estimatedDocumentCount();
+            res.send({ count })
+        })
+
+        // send ta from db(pagination part 2)
+        app.get('/answer', async (req, res) => {
+            const page = parseInt(req.query.page)
+            const size = parseInt(req.query.size)
+
+            const result = await submitResultCollection.find()
+                .skip(page * size)
+                .limit(size)
+                .toArray();
+
+            res.send(result)
+        })
+
+
+        //------------------------------------------
+        //   pagination for complete submited page(pagination part 1)
         app.get('/resultCount', async (req, res) => {
             const count = await marksCollection.estimatedDocumentCount();
             res.send({ count })
         })
 
-        // send ta from db
+        // send ta from db(pagination part 2)
         app.get('/result', async (req, res) => {
             const page = parseInt(req.query.page)
             const size = parseInt(req.query.size)
@@ -267,7 +282,7 @@ async function run() {
             res.send(result)
         })
 
-
+        //--------------------------------------------
 
 
 
